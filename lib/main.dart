@@ -113,8 +113,9 @@ class _TemperatureConverterScreenState
     }
     setState(() {
       _result =
-          '$_selectedConversion: $input$inputUnit => ${converted.toStringAsFixed(2)}$outputUnit';
-      _history.add('$input$inputUnit is equal to ${converted.toStringAsFixed(2)}$outputUnit');
+          '$_selectedConversion: $input$inputUnit => ${converted.toStringAsFixed(1)}$outputUnit';
+      _history.add(
+          '$input$inputUnit is equal to ${converted.toStringAsFixed(1)}$outputUnit');
     });
   }
 
@@ -148,78 +149,92 @@ class _TemperatureConverterScreenState
         ),
         centerTitle: true,
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            TextField(
-              controller: _controller,
-              decoration: InputDecoration(
-                labelText: 'Enter temperature value',
-              ),
-              keyboardType: TextInputType.number,
-              onChanged: (value) => _clearResult(),
-            ),
-            SizedBox(height: 16),
-            DropdownButtonFormField<String>(
-              value: _selectedConversion,
-              items: <String>[
-                'Fahrenheit to Celsius',
-                'Celsius to Fahrenheit'
-              ].map((String value) {
-                return DropdownMenuItem<String>(
-                  value: value,
-                  child: Text(value),
-                );
-              }).toList(),
-              decoration: InputDecoration(
-                labelText: 'Select conversion type',
-              ),
-              onChanged: (value) {
-                setState(() {
-                  _selectedConversion = value!;
-                  _clearResult();
-                });
-              },
-            ),
-            SizedBox(height: 16),
-            ElevatedButton(
-              onPressed: _convertTemperature,
-              child: Text('Convert', style: TextStyle(color: Colors.black)),
-
-            ),
-            SizedBox(height: 16),
-            Text(
-              _result.isEmpty ? 'Result will be shown here' : _result,
-              style: TextStyle(fontSize: 18),
-            ),
-            SizedBox(height: 16),
-            ElevatedButton(
-              onPressed: _clearHistory,
-              child: Text('Clear History', style: TextStyle(color: Colors.black)),
-
-              style: ButtonStyle(
-                backgroundColor: MaterialStateProperty.all(Colors.red),
-                padding: MaterialStateProperty.all(
-                  EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+      body: SafeArea(
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              children: [
+                TextField(
+                  controller: _controller,
+                  decoration: InputDecoration(
+                    labelText: 'Enter temperature value',
+                  ),
+                  keyboardType: TextInputType.number,
+                  onChanged: (value) => _clearResult(),
                 ),
-                textStyle: MaterialStateProperty.all(
-                  TextStyle(fontSize: 16, color: Colors.white),
+                SizedBox(height: 16),
+                DropdownButtonFormField<String>(
+                  value: _selectedConversion,
+                  items: <String>[
+                    'Fahrenheit to Celsius',
+                    'Celsius to Fahrenheit'
+                  ].map((String value) {
+                    return DropdownMenuItem<String>(
+                      value: value,
+                      child: Text(value),
+                    );
+                  }).toList(),
+                  decoration: InputDecoration(
+                    labelText: 'Select conversion type',
+                  ),
+                  onChanged: (value) {
+                    setState(() {
+                      _selectedConversion = value!;
+                      _clearResult();
+                    });
+                  },
                 ),
-              ),
+                SizedBox(height: 16),
+                ElevatedButton(
+                  onPressed: _convertTemperature,
+                  child: Text('Convert', style: TextStyle(color: Colors.black)),
+                ),
+                SizedBox(height: 16),
+                Text(
+                  _result.isEmpty ? 'Result will be shown here' : _result,
+                  style: TextStyle(fontSize: 18),
+                ),
+                SizedBox(height: 16),
+                ElevatedButton(
+                  onPressed: _clearHistory,
+                  child: Text('Clear History', style: TextStyle(color: Colors.black)),
+                  style: ButtonStyle(
+                    backgroundColor: MaterialStateProperty.all(Colors.red),
+                    padding: MaterialStateProperty.all(
+                      EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                    ),
+                    textStyle: MaterialStateProperty.all(
+                      TextStyle(fontSize: 16, color: Colors.white),
+                    ),
+                  ),
+                ),
+                SizedBox(height: 16),
+                Container(
+                  height: 300, // Adjusted height
+                  decoration: BoxDecoration(
+                    color: Colors.grey[200], // Background color
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  padding: EdgeInsets.all(8.0),
+                  child: Scrollbar(
+                    child: SingleChildScrollView(
+                      child: ListView.builder(
+                        shrinkWrap: true,
+                        physics: NeverScrollableScrollPhysics(),
+                        itemCount: _history.length,
+                        itemBuilder: (context, index) {
+                          return ListTile(
+                            title: Text(_history[index]),
+                          );
+                        },
+                      ),
+                    ),
+                  ),
+                ),
+              ],
             ),
-            SizedBox(height: 16),
-            Expanded(
-              child: ListView.builder(
-                itemCount: _history.length,
-                itemBuilder: (context, index) {
-                  return ListTile(
-                    title: Text(_history[index]),
-                  );
-                },
-              ),
-            ),
-          ],
+          ),
         ),
       ),
     );
